@@ -150,9 +150,10 @@ async def on_message(ctx):
                 #It's not a thing, so no record was found.
                 #Create new record.
                 else:
-                    try:#           INSERT INTO tableName (field_1, field_2, field_3) VALUES ---- 
+                    try:#           INSERT INTO tableName (field_1, field_2, field_3) VALUES (value_1, value_2, value_3) 
                         #           the + concatenates, or sticks together, two strings. str(variablename) hot converts contents to string.
-            
+                        #           That both sql and python require quotes for syntax makes things look confusing
+                        #           python accepts " or ' while sql requires ". keeping this in mind one can make sense of the statements.
                         sql.execute('INSERT INTO savedTriggers (message_id,reactcode,role_id) VALUES (' + str(thisMessageID) + ',"' + str(thisEmoji) + '",' + str(thisRoleID) + ');')
                         mydb.commit()
                     except Exception as e:
