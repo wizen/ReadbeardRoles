@@ -1,0 +1,6 @@
+create table savedTriggers(
+	_index bigint unsigned auto_increment primary key,
+	message_id bigint unsigned,
+	reactcode varchar(30),
+	role_id bigint unsigned
+)
