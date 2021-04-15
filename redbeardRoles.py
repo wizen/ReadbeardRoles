@@ -86,7 +86,23 @@ async def on_raw_reaction_remove(ctx):
 
 @bot.event
 async def on_message(ctx):
-    #Note "ctx"
+    #Note "ctx" and all the things that rely on it.
+    #on_message's ctx is an instance of type Message, which is a class of object in discord.py
+    #that's object as in Object Oriented Programming. Programming oriented around making 
+    #stuff easy with recursive object memberships.
+    #this language is python, the indenting is not only visually appealing, it is
+    #also part of the syntax, or the rules of the language.
+    
+    # https://discordpy.readthedocs.io/en/latest/api.html?highlight=message#discord.Message
+    # that is the URL for the documentation of discord.py Application Programming Interface (API)
+    # Explains the attributes (ctx.channel in this case is the channel the message came in, for example)
+    # explains the methods (like attribute but they do stuff instead of just being there)
+    # notice how in raw_reaction_remove above we use ctx.remove_reaction()
+    
+    # each function definition "passes" its own "arguments" (gives a different ctx version)
+    #and  ctx could be called anything, ctx is just short for context and it's used in the context
+    # of the definition, so you see ctx used throughout just 'cuz it's my form./
+    
     #If message is command
     if ctx.content.startswith('!') and len(ctx.content)>1 and ctx.author.bot == False:
         #And if the user is admin
