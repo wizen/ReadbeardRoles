@@ -39,7 +39,7 @@ mydb = mysql.connector.connect(
   database="redbeardRoles"
 )
 #set up the mysql query handler
-sql=mydb.cursor()
+sql=mydb.cursor(buffered=True)
 
 #(My Simple Query Language, free version of MSSQL, just guess what MS means)
 
@@ -128,11 +128,11 @@ async def on_message(ctx):
                 thisEmoji = msg[2]
                 thisRoleID = msg[3]
                 #Arbitrary query to see if we have this message in the db already
-                msgQuery = sql.execute('select _index from savedTriggers where message_id = "'+str(ctx.id)+'";')
-                msgIsWatched = sql.fetchall()
-                #If we find a record with the message_id
-                #Basically asking "Is this a thing?"
-                if msgIsWatched: 
+                msgQuery = sql.execute('select _index from savedTriggers where message_id = "'+ str(ctx.id) +'";')                
+                messageHasContent = (str(sql.fetchone()) != "None")
+                #If the length of the results list is more than nothing
+                #Basically asking "Is this a thing?"                
+                if messageHasContent: 
                     #It's a thing. Do stuff to the thing.
                     await ctx.channel.send("Adding emoji to watched message...")
                     
