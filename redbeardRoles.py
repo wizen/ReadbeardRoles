@@ -68,16 +68,16 @@ async def on_raw_reaction_add(ctx):
 async def on_raw_reaction_remove(ctx):
 #   remove from thisMember the result of query (select role from savedTriggers where message_id = message_id and reaction = emoji)
     # query server for the reaction removed & fetch result
-    reactcodeQuery = await sql.execute('select reactcode from savedTriggers where message_id = "'+str(ctx.message_id)+'";')
-    reactcode = await sql.fetchone()
+    reactcodeQuery = sql.execute('select reactcode from savedTriggers where message_id = "'+str(ctx.message_id)+'";')
+    reactcode = sql.fetchone()
     
     if reactcode:
          #Remove the role for ctx.emoji and ctx.message_id
         thisGuild = get(bot.guilds, id=ctx.guild_id)
         theseMembers =  await thisGuild.query_members(limit=1, user_ids=ctx.user_id, cache=True)
-        thisMember = await get(theseMembers, id=ctx.user_id)
-        roleQuery = await sql.execute('select role_id from savedTriggers where reactcode = "'+ str(ctx.emoji) +'" and message_id = '+ str(ctx.message_id) +';')
-        rightRole = await sql.fetchone()
+        thisMember = get(theseMembers, id=ctx.user_id)
+        roleQuery = sql.execute('select role_id from savedTriggers where reactcode = "'+ str(ctx.emoji) +'" and message_id = '+ str(ctx.message_id) +';')
+        rightRole = sql.fetchone()
         thisRole = get(await thisGuild.fetch_roles(), id=rightRole[0])
         try:
             await thisMember.remove_roles(thisRole)
@@ -128,8 +128,8 @@ async def on_message(ctx):
                 thisEmoji = msg[2]
                 thisRoleID = msg[3]
                 #Arbitrary query to see if we have this message in the db already
-                msgQuery = await sql.execute('select _index from savedTriggers where message_id = "'+ str(ctx.id) +'";')                
-                messageHasContent = (str(await sql.fetchone()) != "None")
+                msgQuery = sql.execute('select _index from savedTriggers where message_id = "'+ str(ctx.id) +'";')                
+                messageHasContent = (str(sql.fetchone()) != "None")
                 #If the length of the results list is more than nothing
                 #Basically asking "Is this a thing?"                
                 if messageHasContent: 
@@ -139,14 +139,14 @@ async def on_message(ctx):
                     #means what it says. tries a thing, braces itself for an error.
                     #if error is found, you can handle it without the bot crashing
                     try:
-                        await sql.execute('insert into savedTriggers (message_id,reactcode,role_id) values ('+str(thisMessageID)+',"'+str(thisEmoji)+'","'+str(thisRoleID)+'");')
-                        await mydb.commit()
+                        sql.execute('insert into savedTriggers (message_id,reactcode,role_id) values ('+str(thisMessageID)+',"'+str(thisEmoji)+'","'+str(thisRoleID)+'");')
+                        mydb.commit()
                     except Exception as e:
                         print("Existing Message Exception:" + str(e))
                     #Things to do ONLY IF except wasn't called.
                     finally:
-                        await ctx.add_reaction(thisEmoji)
-                        await ctx.channel.send("Emoji added to existing watched message.")
+                        ctx.add_reaction(thisEmoji)
+                        ctx.channel.send("Emoji added to existing watched message.")
                 #It's not a thing, so no record was found.
                 #Create new record.
                 else:
@@ -154,8 +154,8 @@ async def on_message(ctx):
                         #           the + concatenates, or sticks together, two strings. str(variablename) hot converts contents to string.
                         #           That both sql and python require quotes for syntax makes things look confusing
                         #           python accepts " or ' while sql requires ". keeping this in mind one can make sense of the statements.
-                        await sql.execute('INSERT INTO savedTriggers (message_id,reactcode,role_id) VALUES (' + str(thisMessageID) + ',"' + str(thisEmoji) + '",' + str(thisRoleID) + ');')
-                        await mydb.commit()
+                        sql.execute('INSERT INTO savedTriggers (message_id,reactcode,role_id) VALUES (' + str(thisMessageID) + ',"' + str(thisEmoji) + '",' + str(thisRoleID) + ');')
+                        mydb.commit()
                     except Exception as e:
                         print("New Message Exception: "+str(e))
                     finally:
